@@ -21,7 +21,16 @@ def getPersonInfo():
         if (person is not None):
             ret = {"code":0}
             ret["name"] = person.name
-            ret["papers"] = [{"title": i.title, "paperid": str(i.id)} for i in person.papers]
+            ret["papers"] = [
+                            {
+                             "title": i.title,
+                             "paperid": str(i.id), 
+                             "authors": [{"name": j.name, "personid": str(j.id)} for j in i.authors], 
+                             "date": str(i.date), 
+                             "keywords": ", ".join(i.keywords),
+                             "publicationtype": i.publicationtype
+                             }
+                             for i in person.papers]
             ret["birthdate"] = person.birthdate
             ret["photo"] = person.photo
             ret["occupation"] = person.occupation
@@ -54,7 +63,14 @@ def search():
                 return Response(json.dumps(ret))
             elif (cat == "paper"):
                 papers = models.Paper.objects(title__icontains=query)
-                l = [{"title": i.title, "paperid": str(i.id), "authors": [{"name": k.name, "personid": k.personid} for k in i.authors]} for i in papers]
+                l = [{
+                             "title": i.title,
+                             "paperid": str(i.id), 
+                             "authors": [{"name": j.name, "personid": str(j.id)} for j in i.authors], 
+                             "date": str(i.date), 
+                             "keywords": ", ".join(i.keywords),
+                             "publicationtype": i.publicationtype
+                             } for i in papers]
                 ret = {"code": 0, "results": l}
                 
                 return Response(json.dumps(ret))
@@ -85,7 +101,7 @@ def getPaperInfo():
             ret["publisher"] = paper.publisher
             ret["content"] = paper.content
             ret["keywords"] = [str(i) for i in person.keywords]
-            
+            ret["publicationtype"] = paper.publicationtype
             ret["authors"] = [{"name": i.name, "personid": str(i.id)} for i in paper.authors]
             
             return Response(json.dumps(ret))

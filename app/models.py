@@ -27,6 +27,7 @@ class Paper(Document):
     '''Paper'''
     title = StringField(max_length=300, required=True)
     digest = StringField()
+    publicationtype = StringField()
     authors = ListField(ReferenceField("Person"))
     date = DateTimeField()
     publisher = StringField()
