@@ -35,7 +35,7 @@ def getPersonInfo():
             ret["photo"] = person.photo
             ret["occupation"] = person.occupation
             ret["email"] = person.email
-            ret["organizations"] = [{"name": i.name, "organizationid": str(i.id)} for i in person.organizations]
+            ret["organizations"] = [{"name": i.name, "orgid": str(i.id)} for i in person.organizations]
             ret["webpages"] = [str(i) for i in person.webpages]
             ret["keywords"] = [str(i) for i in person.keywords]
             
@@ -124,7 +124,7 @@ def getOrgInfo():
             ret["location"] = org.location
             ret["webpage"] = str(org.webpage)
             ret["photo"] = str(org.photo)
-            ret["members"] = [{"name": i.name, "personid": str(i.id)} for i in org.members]
+            ret["members"] = [{"name": i.name, "personid": str(i.id), "photo": str(i.photo), "occupation": str(i.occupation), "keywords": ", ".join(i.keywords)} for i in org.members]
             
             return Response(json.dumps(ret))
         else:
