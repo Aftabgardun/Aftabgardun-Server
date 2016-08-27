@@ -44,7 +44,28 @@ def getPersonInfo():
             return Response(responseNotFound), 504
     else:
         return Response(responseInvalidInput), 504
-        
+
+
+@app.route('/getpersoncoauthors/', methods=['POST'])
+def getPersonCoAuthors():
+    personid = request.form.get('personID')
+    
+    if (personid is not None and type(personid) == str):
+        person = models.Person.objects(pk=personid).first()
+        if (person is not None):
+            ret = {"code":0}
+            ret["name"] = person.name
+            others = []
+            for i in person.papers:
+                others.extend([{"name": j.name, "personid": str(j.id)} for j in i.authors])
+            ret["others"] = others
+            
+            return Response(json.dumps(ret))
+        else:
+            return Response(responseNotFound), 504
+    else:
+        return Response(responseInvalidInput), 504
+
 @app.route('/search/', methods=['POST'])
 def search():
     query = request.form.get('query')
