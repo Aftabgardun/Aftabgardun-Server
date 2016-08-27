@@ -76,7 +76,7 @@ def search():
                 return Response(json.dumps(ret))
             elif (cat == "org"):
                 orgs = models.Organization.objects(name__icontains=query)
-                l = [{"name": i.name, "organizationid": str(i.id)} for i in orgs]
+                l = [{"name": i.name, "orgid": str(i.id), "description": i.description} for i in orgs]
                 ret = {"code": 0, "results": l}
                 
                 return Response(json.dumps(ret), )
@@ -94,15 +94,17 @@ def getPaperInfo():
     if (paperid is not None and type(paperid) == str):
         paper = models.Paper.objects(pk=paperid).first()
         if (paper is not None):
-            ret = {code:0}
+            ret = {"code":0}
             ret["title"] = paper.title
             ret["digest"] = paper.digest
             ret["date"] = paper.date
             ret["publisher"] = paper.publisher
             ret["content"] = paper.content
-            ret["keywords"] = [str(i) for i in person.keywords]
+            ret["keywords"] = [str(i) for i in paper.keywords]
             ret["publicationtype"] = paper.publicationtype
             ret["authors"] = [{"name": i.name, "personid": str(i.id)} for i in paper.authors]
+            ret["content"] = paper.content
+            ret["citedby"] = len(paper.citedby)
             
             return Response(json.dumps(ret))
         else:
@@ -110,5 +112,23 @@ def getPaperInfo():
     else:
         return Response(responseInvalidInput), 504
         
-        
+@app.route('/getorginfo/', methods=['POST'])
+def getOrgInfo():
+    orgid = request.form.get('orgID')
+    
+    if (orgid is not None and type(orgid) == str):
+        org = models.Organization.objects(pk=orgid).first()
+        if (org is not None):
+            ret = {"code":0}
+            ret["name"] = org.name
+            ret["location"] = org.location
+            ret["webpage"] = str(org.webpage)
+            ret["photo"] = str(org.photo)
+            ret["members"] = [{"name": i.name, "personid": str(i.id)} for i in org.members]
+            
+            return Response(json.dumps(ret))
+        else:
+            return Response(responseNotFound), 504
+    else:
+        return Response(responseInvalidInput), 504
 

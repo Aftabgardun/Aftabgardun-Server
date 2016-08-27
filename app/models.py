@@ -33,6 +33,9 @@ class Paper(Document):
     publisher = StringField()
     keywords = ListField(StringField())
     content = URLField()
+    citedby = ListField(ReferenceField("Paper"))
+    cites = ListField(ReferenceField("Paper"))
+    
     meta = {
         'indexes': [
             {
@@ -59,9 +62,11 @@ class Paper(Document):
 class Organization(Document):
     '''Organization'''
     name = StringField(max_length=100, required=True)
-    location = StringField(max_length=150)
+    location = StringField()
     webpage = URLField()
     photo = URLField()
+    members = ListField(ReferenceField("Person"))
+    description = StringField()
     meta = {
         'indexes': [
             {
