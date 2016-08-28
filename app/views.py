@@ -56,8 +56,17 @@ def getPersonCoAuthors():
             ret = {"code":0}
             ret["name"] = person.name
             others = []
+            otherpals = []
             for i in person.papers:
-                others.extend([{"name": j.name, "personid": str(j.id)} for j in i.authors])
+                others.extend([{"name": j.name, "personid": str(j.id), "from": str(person.id)} for j in i.authors])
+                otherpals.extend(i.authors)
+            
+            for i in otherpals:
+                for j in i.papers:
+                    others.extend([{"name": k.name, "personid": str(k.id), "from": str(i.id)} for k in j.authors])
+            
+            #others = list(set(others))
+            
             ret["others"] = others
             
             return Response(json.dumps(ret))
